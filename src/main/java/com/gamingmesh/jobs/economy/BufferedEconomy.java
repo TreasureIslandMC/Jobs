@@ -87,7 +87,6 @@ public class BufferedEconomy {
     /**
      * Payout all players the amount they are going to be paid
      */
-    @SuppressWarnings("deprecation")
     public void payAll() {
 	if (payments.isEmpty())
 	    return;
