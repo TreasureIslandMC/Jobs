@@ -8,7 +8,7 @@ import com.gamingmesh.jobs.CMILib.CMIMaterial;
 import com.gamingmesh.jobs.CMILib.VersionChecker.Version;
 import com.gamingmesh.jobs.commands.Cmd;
 import com.gamingmesh.jobs.commands.JobCommand;
-import com.gamingmesh.jobs.stuff.Util;
+import com.gamingmesh.jobs.utils.Util;
 
 public class blockinfo implements Cmd {
 

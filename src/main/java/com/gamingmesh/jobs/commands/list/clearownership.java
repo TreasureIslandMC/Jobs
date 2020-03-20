@@ -7,7 +7,7 @@ import com.gamingmesh.jobs.Jobs;
 import com.gamingmesh.jobs.commands.Cmd;
 import com.gamingmesh.jobs.commands.JobCommand;
 import com.gamingmesh.jobs.container.JobsPlayer;
-import com.gamingmesh.jobs.stuff.FurnaceBrewingHandling;
+import com.gamingmesh.jobs.utils.FurnaceBrewingHandling;
 
 public class clearownership implements Cmd {
 

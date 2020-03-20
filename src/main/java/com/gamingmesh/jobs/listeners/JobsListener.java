@@ -83,7 +83,7 @@ import com.gamingmesh.jobs.container.JobProgression;
 import com.gamingmesh.jobs.container.JobsArmorChangeEvent;
 import com.gamingmesh.jobs.container.JobsArmorChangeEvent.EquipMethod;
 import com.gamingmesh.jobs.container.JobsPlayer;
-import com.gamingmesh.jobs.stuff.Util;
+import com.gamingmesh.jobs.utils.Util;
 
 public class JobsListener implements Listener {
     // hook to the main plugin

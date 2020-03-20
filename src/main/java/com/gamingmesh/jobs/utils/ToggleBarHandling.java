@@ -1,4 +1,4 @@
-package com.gamingmesh.jobs.stuff;
+package com.gamingmesh.jobs.utils;
 
 import java.util.HashMap;
 import java.util.Map;

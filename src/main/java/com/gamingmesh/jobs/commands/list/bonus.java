@@ -12,7 +12,7 @@ import com.gamingmesh.jobs.container.CurrencyType;
 import com.gamingmesh.jobs.container.Job;
 import com.gamingmesh.jobs.container.JobsPlayer;
 import com.gamingmesh.jobs.hooks.HookManager;
-import com.gamingmesh.jobs.stuff.ChatColor;
+import com.gamingmesh.jobs.utils.ChatColor;
 
 public class bonus implements Cmd {
 

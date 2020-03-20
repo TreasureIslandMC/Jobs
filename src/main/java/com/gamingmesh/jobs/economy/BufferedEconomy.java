@@ -23,7 +23,7 @@ import com.gamingmesh.jobs.Jobs;
 import com.gamingmesh.jobs.api.JobsPaymentEvent;
 import com.gamingmesh.jobs.container.CurrencyType;
 import com.gamingmesh.jobs.container.JobsPlayer;
-import com.gamingmesh.jobs.stuff.ToggleBarHandling;
+import com.gamingmesh.jobs.utils.ToggleBarHandling;
 import com.gamingmesh.jobs.tasks.BufferedPaymentTask;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -37,19 +37,19 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class BufferedEconomy {
 	private Jobs plugin;
-	private Economy economy;
+	private net.milkbowl.vault.economy.Economy economy;
 	private LinkedBlockingQueue<BufferedPayment> payments = new LinkedBlockingQueue<>();
 	private final Map<UUID, BufferedPayment> paymentCache = Collections.synchronizedMap(new HashMap<>());
 
 	private OfflinePlayer serverAccount = null;
 	private OfflinePlayer serverTaxesAccount = null;
 
-	public BufferedEconomy(Jobs plugin, Economy economy) {
+	public BufferedEconomy(Jobs plugin, net.milkbowl.vault.economy.Economy economy) {
 		this.plugin = plugin;
 		this.economy = economy;
 	}
 
-	public Economy getEconomy() {
+	public net.milkbowl.vault.economy.Economy getEconomy() {
 		return economy;
 	}
 
@@ -158,61 +158,66 @@ public class BufferedEconomy {
 			}
 
 			if (Jobs.getGCManager().UseServerAccount) {
-				if (economy.hasMoney(serverAccountName, totalAmount)) {
+				if (economy.has(serverAccountName, totalAmount)) {
 					hasMoney = true;
 					economy.withdrawPlayer(serverAccountName, totalAmount);
 				}
 			}
 
 			// Schedule all payments
-			int i = 0;
-			for (BufferedPayment payment : paymentCache.values()) {
-				i++;
-
-				if (payment.getOfflinePlayer() == null)
-					continue;
-
-				// JobsPayment event
-				JobsPaymentEvent JobsPaymentEvent = new JobsPaymentEvent(payment.getOfflinePlayer(), payment.getPayment());
-				Bukkit.getServer().getPluginManager().callEvent(JobsPaymentEvent);
-				// If event is canceled, dont do anything
-				if (JobsPaymentEvent.isCancelled())
-					continue;
-
-				// Do we need this?
-				payment.getPayment().putAll(JobsPaymentEvent.getPayment());
-
-				if (Jobs.getGCManager().UseServerAccount) {
-					if (!hasMoney) {
-						Jobs.getActionBar().send(payment.getOfflinePlayer().getPlayer(), Jobs.getLanguage().getMessage("economy.error.nomoney"));
-						continue;
-					}
-					if (Jobs.getGCManager().isEconomyAsync())
-						Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new BufferedPaymentTask(this, economy, payment), i);
-					else
-						Bukkit.getScheduler().runTaskLater(plugin, new BufferedPaymentTask(this, economy, payment), i);
-				} else {
-					if (Jobs.getGCManager().isEconomyAsync())
-						Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new BufferedPaymentTask(this, economy, payment), i);
-					else
-						Bukkit.getScheduler().runTaskLater(plugin, new BufferedPaymentTask(this, economy, payment), i);
-				}
-				try {
-					// Action bar stuff
-					ShowActionBar(payment);
-					if (payment.getOfflinePlayer().isOnline() && Jobs.getVersionCheckManager().getVersion().isHigher(Version.v1_8_R3)) {
-						JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(payment.getOfflinePlayer().getUniqueId());
-						Jobs.getBBManager().ShowJobProgression(jPlayer);
-					}
-				} catch (Throwable e) {
-				}
-			}
+			schedulePayments(hasMoney);
 			// empty payment cache
 			paymentCache.clear();
 		}
 	}
 
-	public void ShowActionBar(BufferedPayment payment) {
+	private void schedulePayments(boolean hasMoney){
+		int i = 0;
+		for (BufferedPayment payment : paymentCache.values()) {
+			i++;
+
+			if (payment.getOfflinePlayer() == null)
+				continue;
+
+			// JobsPayment event
+			JobsPaymentEvent jobsPaymentEvent = new JobsPaymentEvent(payment.getOfflinePlayer(), payment.getPayment());
+			Bukkit.getServer().getPluginManager().callEvent(jobsPaymentEvent);
+			// If event is canceled, dont do anything
+			if (jobsPaymentEvent.isCancelled())
+				continue;
+
+			// Do we need this?
+			payment.getPayment().putAll(jobsPaymentEvent.getPayment());
+
+			if (Jobs.getGCManager().UseServerAccount) {
+				if (!hasMoney) {
+					Jobs.getActionBar().send(payment.getOfflinePlayer().getPlayer(), Jobs.getLanguage().getMessage("economy.error.nomoney"));
+					continue;
+				}
+				if (Jobs.getGCManager().isEconomyAsync())
+					Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new BufferedPaymentTask(this, economy, payment), i);
+				else
+					Bukkit.getScheduler().runTaskLater(plugin, new BufferedPaymentTask(this, economy, payment), i);
+			} else {
+				if (Jobs.getGCManager().isEconomyAsync())
+					Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new BufferedPaymentTask(this, economy, payment), i);
+				else
+					Bukkit.getScheduler().runTaskLater(plugin, new BufferedPaymentTask(this, economy, payment), i);
+			}
+			try {
+				// Action bar stuff
+				showActionBar(payment);
+				if (payment.getOfflinePlayer().isOnline() && Jobs.getVersionCheckManager().getVersion().isHigher(Version.v1_8_R3)) {
+					JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(payment.getOfflinePlayer().getUniqueId());
+					Jobs.getBBManager().ShowJobProgression(jPlayer);
+				}
+			} catch (Throwable e) {
+			}
+		}
+
+	}
+
+	public void showActionBar(BufferedPayment payment) {
 		if (payment.getOfflinePlayer() == null || !payment.getOfflinePlayer().isOnline())
 			return;
 
