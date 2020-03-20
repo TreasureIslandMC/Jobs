@@ -160,7 +160,7 @@ public class JobsPlayer {
 	    return true;
 	PaymentData data = getPaymentLimit();
 	Integer value = limits.get(type);
-	if (data.IsReachedLimit(type, value == null ? 0 : value)) {
+	if (data.isReachedLimit(type, value == null ? 0 : value)) {
 	    String name = type.getName().toLowerCase();
 
 	    if (player.isOnline() && !data.isInformed() && !data.isReseted()) {
@@ -175,12 +175,12 @@ public class JobsPlayer {
 		data.setInformed();
 	    }
 	    if (data.IsAnnounceTime(limit.getAnnouncementDelay()) && player.isOnline())
-		Jobs.getActionBar().send(player, Jobs.getLanguage().getMessage("command.limit.output." + name + "time", "%time%", TimeManage.to24hourShort(data.GetLeftTime(type))));
+		Jobs.getActionBar().send(player, Jobs.getLanguage().getMessage("command.limit.output." + name + "time", "%time%", TimeManage.to24hourShort(data.getLeftTime(type))));
 	    if (data.isReseted())
 		data.setReseted(false);
 	    return false;
 	}
-	data.AddAmount(type, amount);
+	data.addAmount(type, amount);
 	return true;
     }
 

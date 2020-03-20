@@ -1292,7 +1292,7 @@ public abstract class JobsDAO {
 		    continue;
 		if (limit.GetAmount(type) == 0D)
 		    continue;
-		if (limit.GetLeftTime(type) < 0)
+		if (limit.getLeftTime(type) < 0)
 		    continue;
 
 		prest.setInt(1, jPlayer.getUserId());

@@ -22,7 +22,7 @@ import com.gamingmesh.jobs.Jobs;
 import com.gamingmesh.jobs.container.CurrencyType;
 import com.gamingmesh.jobs.economy.BufferedEconomy;
 import com.gamingmesh.jobs.economy.BufferedPayment;
-import com.gamingmesh.jobs.economy.Economy;
+import net.milkbowl.vault.economy.Economy;
 
 public class BufferedPaymentTask implements Runnable {
 	private BufferedEconomy bufferedEconomy;
@@ -40,7 +40,7 @@ public class BufferedPaymentTask implements Runnable {
 		if (payment.get(CurrencyType.MONEY) > 0)
 			economy.depositPlayer(payment.getOfflinePlayer(), payment.get(CurrencyType.MONEY));
 		else {
-			if (!economy.withdrawPlayer(payment.getOfflinePlayer(), -payment.get(CurrencyType.MONEY)))
+			if (!economy.withdrawPlayer(payment.getOfflinePlayer(), -payment.get(CurrencyType.MONEY)).transactionSuccess())
 				bufferedEconomy.pay(payment);
 		}
 

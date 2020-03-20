@@ -19,6 +19,7 @@
 package com.gamingmesh.jobs.economy;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.OfflinePlayer;
@@ -37,7 +38,7 @@ public class BufferedPayment {
 	this.payments.put(CurrencyType.POINTS, points);
     }
 
-    public BufferedPayment(OfflinePlayer offlinePlayer, HashMap<CurrencyType, Double> payments) {
+    public BufferedPayment(OfflinePlayer offlinePlayer, Map<CurrencyType, Double> payments) {
 	this.offlinePlayer = offlinePlayer;
 	// This can contain only one value instead of all posible ones
 	this.payments.putAll(payments);
