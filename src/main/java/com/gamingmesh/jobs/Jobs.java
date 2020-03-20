@@ -663,14 +663,6 @@ public class Jobs extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		instance = this;
-		setEnabled(true);
-
-		if (instance == null) {
-			System.out.println("Plugin instance is null. Plugin will be disabled.");
-			System.out.println("Try restart your server completely. If this not work contact the developers.");
-			setEnabled(false);
-			return;
-		}
 
 //	itemManager = new ItemManager(this);
 
