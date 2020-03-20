@@ -224,24 +224,23 @@ public class BufferedEconomy {
 
 		String playerUUID = payment.getOfflinePlayer().getUniqueId().toString();
 
-		Boolean show = ToggleBarHandling.getActionBarToggle().get(playerUUID) == null ? true :
+		boolean show = ToggleBarHandling.getActionBarToggle().get(playerUUID) == null ? true :
 				ToggleBarHandling.getActionBarToggle().get(playerUUID);
 		Player abp = Bukkit.getPlayer(payment.getOfflinePlayer().getUniqueId());
-		if ((abp != null) && (show.booleanValue())) {
-			String Message = Jobs.getLanguage().getMessage("command.toggle.output.paid.main");
+		if ((abp != null) && (show)) {
+			String message = Jobs.getLanguage().getMessage("command.toggle.output.paid.main");
 			if (payment.get(CurrencyType.MONEY) != 0D) {
-				Message = Message + " " + Jobs.getLanguage().getMessage("command.toggle.output.paid.money", "[amount]", String.format(Jobs.getGCManager().getDecimalPlacesMoney(),
+				message = message + " " + Jobs.getLanguage().getMessage("command.toggle.output.paid.money", "[amount]", String.format(Jobs.getGCManager().getDecimalPlacesMoney(),
 						payment.get(CurrencyType.MONEY)));
 			}
 			if (payment.get(CurrencyType.POINTS) != 0D) {
-				Message = Message + " " + Jobs.getLanguage().getMessage("command.toggle.output.paid.points", new Object[]{"[points]", String.format(Jobs.getGCManager().getDecimalPlacesPoints(),
-						new Object[]{Double.valueOf(payment.get(CurrencyType.POINTS))})});
+				message = message + " " + Jobs.getLanguage().getMessage("command.toggle.output.paid.points", "[points]", String.format(Jobs.getGCManager().getDecimalPlacesPoints(),
+						payment.get(CurrencyType.POINTS)));
 			}
 			if (payment.get(CurrencyType.EXP) != 0D) {
-				Message = Message + " " + Jobs.getLanguage().getMessage("command.toggle.output.paid.exp", new Object[]{"[exp]", String.format(Jobs.getGCManager().getDecimalPlacesExp(), new Object[]{
-						Double.valueOf(payment.get(CurrencyType.EXP))})});
+				message = message + " " + Jobs.getLanguage().getMessage("command.toggle.output.paid.exp", "[exp]", String.format(Jobs.getGCManager().getDecimalPlacesExp(), payment.get(CurrencyType.EXP)));
 			}
-			Jobs.getActionBar().send(abp, Message);
+			Jobs.getActionBar().send(abp, message);
 		}
 	}
 }
