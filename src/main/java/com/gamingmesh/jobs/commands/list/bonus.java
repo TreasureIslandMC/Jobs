@@ -44,19 +44,19 @@ public class bonus implements Cmd {
 
 	player.sendMessage(Jobs.getLanguage().getMessage("command.bonus.output.topline"));
 
-	printBoost(sender, boost, BoostOf.Permission);
-	printBoost(sender, boost, BoostOf.Item);
-	printBoost(sender, boost, BoostOf.Global);
+	printBoost(sender, boost, BoostOf.PERMISSION);
+	printBoost(sender, boost, BoostOf.ITEM);
+	printBoost(sender, boost, BoostOf.GLOBAL);
 	if (Jobs.getGCManager().useDynamicPayment)
-	    printBoost(sender, boost, BoostOf.Dynamic);
-	printBoost(sender, boost, BoostOf.Area);
+	    printBoost(sender, boost, BoostOf.DYNAMIC);
+	printBoost(sender, boost, BoostOf.AREA);
 	if (Jobs.getGCManager().payNearSpawner())
-	    printBoost(sender, boost, BoostOf.NearSpawner);
-	printBoost(sender, boost, BoostOf.PetPay);
+	    printBoost(sender, boost, BoostOf.NEAR_SPAWNER);
+	printBoost(sender, boost, BoostOf.PET_PAY);
 
 	if (HookManager.getMcMMOManager().mcMMOPresent ||
-	    HookManager.getMcMMOManager().mcMMOOverHaul && boost.get(BoostOf.McMMO, CurrencyType.EXP) != 0D)
-	    printBoost(sender, boost, BoostOf.McMMO);
+	    HookManager.getMcMMOManager().mcMMOOverHaul && boost.get(BoostOf.MC_MMO, CurrencyType.EXP) != 0D)
+	    printBoost(sender, boost, BoostOf.MC_MMO);
 
 	player.sendMessage(Jobs.getLanguage().getMessage("general.info.separator"));
 
@@ -76,7 +76,7 @@ public class bonus implements Cmd {
 
     private static void printBoost(CommandSender sender, Boost boost, BoostOf type) {
 	String prefix = ChatColor.GOLD + "*";
-	if (type != BoostOf.NearSpawner && type != BoostOf.PetPay)
+	if (type != BoostOf.NEAR_SPAWNER && type != BoostOf.PET_PAY)
 	    prefix = "";
 
 	String msg = Jobs.getLanguage().getMessage("command.bonus.output." + type.name().toLowerCase(),
@@ -84,7 +84,7 @@ public class bonus implements Cmd {
 	    "%points%", formatText(boost.get(type, CurrencyType.POINTS, true)),
 	    "%exp%", formatText(boost.get(type, CurrencyType.EXP, true)));
 
-	if (msg.startsWith(" ") && (type == BoostOf.NearSpawner || type == BoostOf.PetPay))
+	if (msg.startsWith(" ") && (type == BoostOf.NEAR_SPAWNER || type == BoostOf.PET_PAY))
 	    msg = msg.substring(1, msg.length());
 
 	sender.sendMessage(prefix + msg);

@@ -67,7 +67,7 @@ public class Boost {
 	for (BoostOf one : BoostOf.values()) {
 	    if (!map.containsKey(one))
 		continue;
-	    if (excludeExtra && (one == BoostOf.NearSpawner || one == BoostOf.PetPay))
+	    if (excludeExtra && (one == BoostOf.NEAR_SPAWNER || one == BoostOf.PET_PAY))
 		continue;
 	    r += map.get(one).get(BT);
 	}
