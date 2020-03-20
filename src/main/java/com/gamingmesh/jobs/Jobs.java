@@ -167,7 +167,6 @@ public class Jobs extends JavaPlugin {
 		return Placeholder;
 	}
 
-	@SuppressWarnings("deprecation")
 	private boolean setupPlaceHolderAPI() {
 		if (!getServer().getPluginManager().isPluginEnabled("PlaceholderAPI"))
 			return false;
@@ -521,8 +520,7 @@ public class Jobs extends JavaPlugin {
 		HashMap<Integer, HashMap<String, Log>> playersLogs = dao.getAllLogs();
 		HashMap<Integer, ArchivedJobs> playersArchives = dao.getAllArchivedJobs();
 		HashMap<Integer, PaymentData> playersLimits = dao.loadPlayerLimits();
-		for (Iterator<Entry<UUID, PlayerInfo>> it = temp.entrySet().iterator(); it.hasNext(); ) {
-			Entry<UUID, PlayerInfo> one = it.next();
+		for (Entry<UUID, PlayerInfo> one : temp.entrySet()) {
 			try {
 				int id = one.getValue().getID();
 				JobsPlayer jPlayer = getPlayerManager().getJobsPlayerOffline(
