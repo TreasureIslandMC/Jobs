@@ -635,7 +635,7 @@ public class Jobs extends JavaPlugin {
 	 * Sets the economy handler
 	 * @param eco - the economy handler
 	 */
-	public static void setEconomy(Economy eco) {
+	public static void setEconomy(net.milkbowl.vault.economy.Economy eco) {
 		economy = new BufferedEconomy(getInstance(), eco);
 	}
 
