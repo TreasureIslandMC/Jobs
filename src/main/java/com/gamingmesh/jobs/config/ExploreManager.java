@@ -14,7 +14,7 @@ import com.gamingmesh.jobs.container.ExploreRegion;
 import com.gamingmesh.jobs.container.ExploreRespond;
 import com.gamingmesh.jobs.container.JobsWorld;
 import com.gamingmesh.jobs.dao.JobsDAO.ExploreDataTableFields;
-import com.gamingmesh.jobs.stuff.Util;
+import com.gamingmesh.jobs.utils.Util;
 
 public class ExploreManager {
 

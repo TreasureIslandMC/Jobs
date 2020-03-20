@@ -16,7 +16,7 @@ import org.bukkit.potion.PotionType;
 
 import com.gamingmesh.jobs.Jobs;
 import com.gamingmesh.jobs.CMILib.VersionChecker.Version;
-import com.gamingmesh.jobs.stuff.Util;
+import com.gamingmesh.jobs.utils.Util;
 
 public class ItemManager {
 

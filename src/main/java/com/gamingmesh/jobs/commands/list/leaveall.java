@@ -10,7 +10,7 @@ import com.gamingmesh.jobs.commands.Cmd;
 import com.gamingmesh.jobs.commands.JobCommand;
 import com.gamingmesh.jobs.container.JobProgression;
 import com.gamingmesh.jobs.container.JobsPlayer;
-import com.gamingmesh.jobs.stuff.Util;
+import com.gamingmesh.jobs.utils.Util;
 
 public class leaveall implements Cmd {
 

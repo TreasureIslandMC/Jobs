@@ -25,9 +25,9 @@ import com.gamingmesh.jobs.container.Job;
 import com.gamingmesh.jobs.container.JobInfo;
 import com.gamingmesh.jobs.container.Quest;
 import com.gamingmesh.jobs.container.QuestObjective;
-import com.gamingmesh.jobs.stuff.ChatColor;
-import com.gamingmesh.jobs.stuff.PageInfo;
-import com.gamingmesh.jobs.stuff.Util;
+import com.gamingmesh.jobs.utils.ChatColor;
+import com.gamingmesh.jobs.utils.PageInfo;
+import com.gamingmesh.jobs.utils.Util;
 
 public class editquests implements Cmd {
 

@@ -11,8 +11,8 @@ import com.gamingmesh.jobs.CMILib.RawMessage;
 import com.gamingmesh.jobs.commands.Cmd;
 import com.gamingmesh.jobs.commands.JobCommand;
 import com.gamingmesh.jobs.container.Job;
-import com.gamingmesh.jobs.stuff.ChatColor;
-import com.gamingmesh.jobs.stuff.PageInfo;
+import com.gamingmesh.jobs.utils.ChatColor;
+import com.gamingmesh.jobs.utils.PageInfo;
 
 public class browse implements Cmd {
 

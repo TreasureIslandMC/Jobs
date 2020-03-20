@@ -66,8 +66,8 @@ import com.gamingmesh.jobs.dao.JobsDAOData;
 import com.gamingmesh.jobs.economy.PaymentData;
 import com.gamingmesh.jobs.economy.PointsData;
 import com.gamingmesh.jobs.hooks.HookManager;
-import com.gamingmesh.jobs.stuff.PerformCommands;
-import com.gamingmesh.jobs.stuff.Util;
+import com.gamingmesh.jobs.utils.PerformCommands;
+import com.gamingmesh.jobs.utils.Util;
 
 public class PlayerManager {
 

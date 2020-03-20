@@ -51,7 +51,7 @@ import com.gamingmesh.jobs.listeners.JobsPayment14Listener;
 import com.gamingmesh.jobs.listeners.JobsPaymentListener;
 import com.gamingmesh.jobs.listeners.PistonProtectionListener;
 import com.gamingmesh.jobs.selection.SelectionManager;
-import com.gamingmesh.jobs.stuff.*;
+import com.gamingmesh.jobs.utils.*;
 import com.gamingmesh.jobs.tasks.BufferedPaymentThread;
 import com.gamingmesh.jobs.tasks.DatabaseSaveThread;
 import org.bukkit.Bukkit;

@@ -20,7 +20,7 @@ package com.gamingmesh.jobs.container;
 
 import com.gamingmesh.jobs.Jobs;
 import com.gamingmesh.jobs.resources.jfep.Parser;
-import com.gamingmesh.jobs.stuff.ChatColor;
+import com.gamingmesh.jobs.utils.ChatColor;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

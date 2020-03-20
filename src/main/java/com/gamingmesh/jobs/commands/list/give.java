@@ -11,7 +11,7 @@ import com.gamingmesh.jobs.commands.JobCommand;
 import com.gamingmesh.jobs.container.Job;
 import com.gamingmesh.jobs.container.JobItems;
 import com.gamingmesh.jobs.container.JobLimitedItems;
-import com.gamingmesh.jobs.stuff.GiveItem;
+import com.gamingmesh.jobs.utils.GiveItem;
 
 public class give implements Cmd {
 

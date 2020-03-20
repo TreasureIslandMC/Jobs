@@ -9,7 +9,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import com.gamingmesh.jobs.Jobs;
 import com.gamingmesh.jobs.CMILib.ConfigReader;
 import com.gamingmesh.jobs.container.Title;
-import com.gamingmesh.jobs.stuff.ChatColor;
+import com.gamingmesh.jobs.utils.ChatColor;
 
 public class TitleManager {
 

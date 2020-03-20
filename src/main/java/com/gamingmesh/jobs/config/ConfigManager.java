@@ -27,8 +27,8 @@ import com.gamingmesh.jobs.ItemBoostManager;
 import com.gamingmesh.jobs.Jobs;
 import com.gamingmesh.jobs.container.*;
 import com.gamingmesh.jobs.resources.jfep.Parser;
-import com.gamingmesh.jobs.stuff.ChatColor;
-import com.gamingmesh.jobs.stuff.Util;
+import com.gamingmesh.jobs.utils.ChatColor;
+import com.gamingmesh.jobs.utils.Util;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.bukkit.Material;

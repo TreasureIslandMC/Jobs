@@ -24,9 +24,9 @@ import com.gamingmesh.jobs.container.JobInfo;
 import com.gamingmesh.jobs.container.JobProgression;
 import com.gamingmesh.jobs.container.JobsPlayer;
 import com.gamingmesh.jobs.container.Title;
-import com.gamingmesh.jobs.stuff.PageInfo;
-import com.gamingmesh.jobs.stuff.Sorting;
-import com.gamingmesh.jobs.stuff.Util;
+import com.gamingmesh.jobs.utils.PageInfo;
+import com.gamingmesh.jobs.utils.Sorting;
+import com.gamingmesh.jobs.utils.Util;
 
 public class JobsCommands implements CommandExecutor {
 

@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.bukkit.enchantments.Enchantment;
 
-import com.gamingmesh.jobs.stuff.Util;
+import com.gamingmesh.jobs.utils.Util;
 
 public enum CMIEnchantment {
 

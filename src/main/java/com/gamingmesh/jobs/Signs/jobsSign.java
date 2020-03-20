@@ -5,7 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 import com.gamingmesh.jobs.container.Job;
-import com.gamingmesh.jobs.stuff.Util;
+import com.gamingmesh.jobs.utils.Util;
 
 public class jobsSign {
 

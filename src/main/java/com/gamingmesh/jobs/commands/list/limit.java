@@ -9,7 +9,7 @@ import com.gamingmesh.jobs.commands.JobCommand;
 import com.gamingmesh.jobs.container.CurrencyType;
 import com.gamingmesh.jobs.container.JobsPlayer;
 import com.gamingmesh.jobs.economy.PaymentData;
-import com.gamingmesh.jobs.stuff.TimeManage;
+import com.gamingmesh.jobs.utils.TimeManage;
 
 public class limit implements Cmd {
 

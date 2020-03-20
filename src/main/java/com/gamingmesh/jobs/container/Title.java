@@ -18,7 +18,7 @@
 
 package com.gamingmesh.jobs.container;
 
-import com.gamingmesh.jobs.stuff.ChatColor;
+import com.gamingmesh.jobs.utils.ChatColor;
 
 /**
  * Container class for titles

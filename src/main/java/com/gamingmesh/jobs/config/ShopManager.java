@@ -33,7 +33,7 @@ import com.gamingmesh.jobs.container.JobProgression;
 import com.gamingmesh.jobs.container.JobsPlayer;
 import com.gamingmesh.jobs.container.PlayerPoints;
 import com.gamingmesh.jobs.container.ShopItem;
-import com.gamingmesh.jobs.stuff.GiveItem;
+import com.gamingmesh.jobs.utils.GiveItem;
 
 public class ShopManager {
     private List<ShopItem> list = new ArrayList<>();

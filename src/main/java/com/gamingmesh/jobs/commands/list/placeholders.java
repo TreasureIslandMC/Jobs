@@ -10,7 +10,7 @@ import com.gamingmesh.jobs.Placeholders.Placeholder.JobsPlaceHolders;
 import com.gamingmesh.jobs.Placeholders.Placeholder.JobsPlaceholderType;
 import com.gamingmesh.jobs.commands.Cmd;
 import com.gamingmesh.jobs.commands.JobCommand;
-import com.gamingmesh.jobs.stuff.PageInfo;
+import com.gamingmesh.jobs.utils.PageInfo;
 
 public class placeholders implements Cmd {
 

@@ -21,7 +21,7 @@ import com.gamingmesh.jobs.CMIGUI.GUIManager.GUIRows;
 import com.gamingmesh.jobs.CMIGUI.GUIManager.InvType;
 import com.gamingmesh.jobs.CMILib.CMIMaterial;
 import com.gamingmesh.jobs.commands.JobsCommands;
-import com.gamingmesh.jobs.stuff.PageInfo;
+import com.gamingmesh.jobs.utils.PageInfo;
 
 public class CMIGui {
 

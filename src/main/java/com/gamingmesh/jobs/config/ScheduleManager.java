@@ -18,7 +18,7 @@ import com.gamingmesh.jobs.container.BoostMultiplier;
 import com.gamingmesh.jobs.container.CurrencyType;
 import com.gamingmesh.jobs.container.Job;
 import com.gamingmesh.jobs.container.Schedule;
-import com.gamingmesh.jobs.stuff.TimeManage;
+import com.gamingmesh.jobs.utils.TimeManage;
 
 public class ScheduleManager {
 

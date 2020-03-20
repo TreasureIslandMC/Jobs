@@ -16,7 +16,7 @@ import com.gamingmesh.jobs.container.CurrencyType;
 import com.gamingmesh.jobs.container.JobsPlayer;
 import com.gamingmesh.jobs.container.Log;
 import com.gamingmesh.jobs.container.LogAmounts;
-import com.gamingmesh.jobs.stuff.Sorting;
+import com.gamingmesh.jobs.utils.Sorting;
 
 public class log implements Cmd {
 
