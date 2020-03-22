@@ -1,17 +1,17 @@
 /**
  * Jobs Plugin for Bukkit
  * Copyright (C) 2011 Zak Ford <zak.j.ford@gmail.com>
- * 
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- * 
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ * <p>
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -86,116 +86,107 @@ import com.gamingmesh.jobs.container.JobsPlayer;
 import com.gamingmesh.jobs.utils.Util;
 
 public class JobsListener implements Listener {
-    // hook to the main plugin
-    private Jobs plugin;
+	private Jobs plugin;
 
-    private HashMap<UUID, Long> interactDelay = new HashMap<>();
+	private HashMap<UUID, Long> interactDelay = new HashMap<>();
 
-    public JobsListener(Jobs plugin) {
-	this.plugin = plugin;
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void AsyncPlayerChatEvent(final AsyncPlayerChatEvent event) {
-	if (event.isCancelled())
-	    return;
-
-	if (Util.getJobsEditorMap().isEmpty())
-	    return;
-
-	final Player player = event.getPlayer();
-	if (!Util.getJobsEditorMap().containsKey(player.getUniqueId()))
-	    return;
-
-	final String msg = Util.getJobsEditorMap().remove(player.getUniqueId());
-
-	if (msg == null)
-	    return;
-
-	Bukkit.getServer().getScheduler().runTask(plugin, () -> player.performCommand(msg + event.getMessage()));
-	event.setCancelled(true);
-    }
-
-    private boolean isInteractOk(Player player) {
-	if (!interactDelay.containsKey(player.getUniqueId())) {
-	    interactDelay.put(player.getUniqueId(), System.currentTimeMillis());
-	    return true;
-	}
-	long time = System.currentTimeMillis() - interactDelay.get(player.getUniqueId());
-	interactDelay.put(player.getUniqueId(), System.currentTimeMillis());
-	if (time > 100)
-	    return true;
-	return false;
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onJoin(PlayerJoinEvent event) {
-	if (Jobs.getGCManager().isShowNewVersion() && event.getPlayer().hasPermission("jobs.versioncheck"))
-	    Jobs.getVersionCheckManager().VersionCheck(event.getPlayer());
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onSelection(PlayerInteractEvent event) {
-	if (event.getClickedBlock() == null)
-	    return;
-
-	if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK)
-	    return;
-
-	Player player = event.getPlayer();
-	ItemStack iih = Jobs.getNms().getItemInMainHand(player);
-	if (iih == null || iih.getType() == Material.AIR)
-	    return;
-
-	if (!iih.getType().equals(CMIMaterial.get(Jobs.getGCManager().getSelectionTool()).getMaterial()))
-	    return;
-
-	if (!Jobs.getGCManager().canPerformActionInWorld(event.getPlayer().getWorld()))
-	    return;
-
-	if (!player.hasPermission("jobs.area.select"))
-	    return;
-
-	if (player.getGameMode().equals(GameMode.CREATIVE))
-	    event.setCancelled(true);
-
-	Block block = event.getClickedBlock();
-	Location loc = block.getLocation();
-	if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-	    Jobs.getSelectionManager().placeLoc1(player, loc);
-	    player.sendMessage(Jobs.getLanguage().getMessage("command.area.output.selected1", "%x%", loc.getBlockX(), "%y%", loc.getBlockY(), "%z%", loc.getBlockZ()));
-	    event.setCancelled(true);
-	} else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-	    Jobs.getSelectionManager().placeLoc2(player, loc);
-	    player.sendMessage(Jobs.getLanguage().getMessage("command.area.output.selected2", "%x%", loc.getBlockX(), "%y%", loc.getBlockY(), "%z%", loc.getBlockZ()));
-	    event.setCancelled(true);
+	public JobsListener(Jobs plugin) {
+		this.plugin = plugin;
 	}
 
-	if (Jobs.getSelectionManager().hasPlacedBoth(player)) {
-	    JobsAreaSelectionEvent jobsAreaSelectionEvent = new JobsAreaSelectionEvent(player, Jobs.getSelectionManager().getSelectionCuboid(player));
-	    Bukkit.getServer().getPluginManager().callEvent(jobsAreaSelectionEvent);
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void asyncPlayerChatEvent(final AsyncPlayerChatEvent event) {
+		if (event.isCancelled())
+			return;
+
+		if (Util.getJobsEditorMap().isEmpty())
+			return;
+
+		final Player player = event.getPlayer();
+		if (!Util.getJobsEditorMap().containsKey(player.getUniqueId()))
+			return;
+
+		final String msg = Util.getJobsEditorMap().remove(player.getUniqueId());
+
+		if (msg == null)
+			return;
+
+		Bukkit.getServer().getScheduler().runTask(plugin, () -> player.performCommand(msg + event.getMessage()));
+		event.setCancelled(true);
 	}
 
-	return;
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerJoin(final PlayerJoinEvent event) {
-	// make sure plugin is enabled
-	if (!plugin.isEnabled())
-	    return;
-
-	if (!Jobs.getGCManager().MultiServerCompatability())
-	    Jobs.getPlayerManager().playerJoin(event.getPlayer());
-	else {
-	    Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-		@Override
-		public void run() {
-		    Jobs.getPlayerManager().playerJoin(event.getPlayer());
+	private boolean isInteractOk(Player player) {
+		if (!interactDelay.containsKey(player.getUniqueId())) {
+			interactDelay.put(player.getUniqueId(), System.currentTimeMillis());
+			return true;
 		}
-	    }, 10L);
+		long time = System.currentTimeMillis() - interactDelay.get(player.getUniqueId());
+		interactDelay.put(player.getUniqueId(), System.currentTimeMillis());
+		return time > 100;
 	}
-    }
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onJoin(PlayerJoinEvent event) {
+		if (Jobs.getGCManager().isShowNewVersion() && event.getPlayer().hasPermission("jobs.versioncheck"))
+			Jobs.getVersionCheckManager().VersionCheck(event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onSelection(PlayerInteractEvent event) {
+		if (event.getClickedBlock() == null)
+			return;
+
+		if (event.getAction() != Action.LEFT_CLICK_BLOCK && event.getAction() != Action.RIGHT_CLICK_BLOCK)
+			return;
+
+		Player player = event.getPlayer();
+		ItemStack iih = Jobs.getNms().getItemInMainHand(player);
+		if (iih == null || iih.getType() == Material.AIR)
+			return;
+
+		if (!iih.getType().equals(CMIMaterial.get(Jobs.getGCManager().getSelectionTool()).getMaterial()))
+			return;
+
+		if (!Jobs.getGCManager().canPerformActionInWorld(event.getPlayer().getWorld()))
+			return;
+
+		if (!player.hasPermission("jobs.area.select"))
+			return;
+
+		if (player.getGameMode().equals(GameMode.CREATIVE))
+			event.setCancelled(true);
+
+		Block block = event.getClickedBlock();
+		Location loc = block.getLocation();
+		if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+			Jobs.getSelectionManager().placeLoc1(player, loc);
+			player.sendMessage(Jobs.getLanguage().getMessage("command.area.output.selected1", "%x%", loc.getBlockX(), "%y%", loc.getBlockY(), "%z%", loc.getBlockZ()));
+			event.setCancelled(true);
+		} else if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			Jobs.getSelectionManager().placeLoc2(player, loc);
+			player.sendMessage(Jobs.getLanguage().getMessage("command.area.output.selected2", "%x%", loc.getBlockX(), "%y%", loc.getBlockY(), "%z%", loc.getBlockZ()));
+			event.setCancelled(true);
+		}
+
+		if (Jobs.getSelectionManager().hasPlacedBoth(player)) {
+			JobsAreaSelectionEvent jobsAreaSelectionEvent = new JobsAreaSelectionEvent(player, Jobs.getSelectionManager().getSelectionCuboid(player));
+			Bukkit.getServer().getPluginManager().callEvent(jobsAreaSelectionEvent);
+		}
+
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPlayerJoin(final PlayerJoinEvent event) {
+		// make sure plugin is enabled
+		if (!plugin.isEnabled())
+			return;
+
+		if (!Jobs.getGCManager().MultiServerCompatability())
+			Jobs.getPlayerManager().playerJoin(event.getPlayer());
+		else {
+			Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () -> Jobs.getPlayerManager().playerJoin(event.getPlayer()), 10L);
+		}
+	}
 
 //    @EventHandler(priority = EventPriority.MONITOR)
 //    public void onPlayerJoinMonitor(PlayerJoinEvent event) {
@@ -213,591 +204,592 @@ public class JobsListener implements Listener {
 //	Jobs.getPermissionHandler().recalculatePermissions(jPlayer);
 //    }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerQuit(PlayerQuitEvent event) {
-	// make sure plugin is enabled
-	if (!plugin.isEnabled())
-	    return;
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		// make sure plugin is enabled
+		if (!plugin.isEnabled())
+			return;
 
-	Jobs.getPlayerManager().playerQuit(event.getPlayer());
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerWorldChange(PlayerChangedWorldEvent event) {
-	if (!plugin.isEnabled())
-	    return;
-
-	JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(event.getPlayer());
-	Jobs.getPermissionHandler().recalculatePermissions(jPlayer);
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onSignInteract(PlayerInteractEvent event) {
-	if (!plugin.isEnabled())
-	    return;
-
-	if (!Jobs.getGCManager().SignsEnabled)
-	    return;
-
-	if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
-	    return;
-
-	Block block = event.getClickedBlock();
-	if (block == null || !(block.getState() instanceof Sign))
-	    return;
-
-	Player player = event.getPlayer();
-	if (!isInteractOk(player))
-	    return;
-
-	Sign sign = (Sign) block.getState();
-	String FirstLine = sign.getLine(0);
-
-	if (!ChatColor.stripColor(FirstLine).equalsIgnoreCase(ChatColor.stripColor(Jobs.getLanguage().getMessage("signs.topline"))))
-	    return;
-
-	String command = ChatColor.stripColor(sign.getLine(1));
-	for (String key : Jobs.getGCManager().keys) {
-	    if (command.equalsIgnoreCase(ChatColor.stripColor(Jobs.getLanguage().getMessage("signs.secondline." + key)))) {
-		command = key;
-		break;
-	    }
+		Jobs.getPlayerManager().playerQuit(event.getPlayer());
 	}
 
-	player.performCommand("jobs " + command + " " + ChatColor.stripColor(sign.getLine(2)) + " " + ChatColor.stripColor(sign.getLine(3)));
-    }
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerWorldChange(PlayerChangedWorldEvent event) {
+		if (!plugin.isEnabled())
+			return;
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onSignDestroy(BlockBreakEvent event) {
-	if (!plugin.isEnabled())
-	    return;
+		JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(event.getPlayer());
+		Jobs.getPermissionHandler().recalculatePermissions(jPlayer);
+	}
 
-	if (!Jobs.getGCManager().SignsEnabled)
-	    return;
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onSignInteract(PlayerInteractEvent event) {
+		if (!plugin.isEnabled())
+			return;
 
-	Block block = event.getBlock();
-	if (!(block.getState() instanceof Sign))
-	    return;
+		if (!Jobs.getGCManager().SignsEnabled)
+			return;
 
-	Player player = event.getPlayer();
-	Sign sign = (Sign) block.getState();
-	String FirstLine = sign.getLine(0);
-	if (FirstLine.contains(Jobs.getLanguage().getMessage("signs.topline"))) {
-	    if (!player.hasPermission("jobs.command.signs")) {
+		if (event.getAction() != Action.RIGHT_CLICK_BLOCK)
+			return;
+
+		Block block = event.getClickedBlock();
+		if (block == null || !(block.getState() instanceof Sign))
+			return;
+
+		Player player = event.getPlayer();
+		if (!isInteractOk(player))
+			return;
+
+		Sign sign = (Sign) block.getState();
+		String FirstLine = sign.getLine(0);
+
+		if (!ChatColor.stripColor(FirstLine).equalsIgnoreCase(ChatColor.stripColor(Jobs.getLanguage().getMessage("signs.topline"))))
+			return;
+
+		String command = ChatColor.stripColor(sign.getLine(1));
+		for (String key : Jobs.getGCManager().keys) {
+			if (command.equalsIgnoreCase(ChatColor.stripColor(Jobs.getLanguage().getMessage("signs.secondline." + key)))) {
+				command = key;
+				break;
+			}
+		}
+
+		player.performCommand("jobs " + command + " " + ChatColor.stripColor(sign.getLine(2)) + " " + ChatColor.stripColor(sign.getLine(3)));
+	}
+
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onSignDestroy(BlockBreakEvent event) {
+		if (!plugin.isEnabled())
+			return;
+
+		if (!Jobs.getGCManager().SignsEnabled)
+			return;
+
+		Block block = event.getBlock();
+		if (!(block.getState() instanceof Sign))
+			return;
+
+		Player player = event.getPlayer();
+		Sign sign = (Sign) block.getState();
+		String FirstLine = sign.getLine(0);
+		if (FirstLine.contains(Jobs.getLanguage().getMessage("signs.topline"))) {
+			if (!player.hasPermission("jobs.command.signs")) {
+				event.setCancelled(true);
+				player.sendMessage(Jobs.getLanguage().getMessage("signs.cantdestroy"));
+				return;
+			}
+		}
+
+		jobsSign jSign = Jobs.getSignUtil().getSign(block.getLocation());
+		if (jSign == null)
+			return;
+
+		if (!player.hasPermission("jobs.command.signs")) {
+			event.setCancelled(true);
+			player.sendMessage(Jobs.getLanguage().getMessage("signs.cantdestroy"));
+			return;
+		}
+
+		if (Jobs.getSignUtil().removeSign(block.getLocation()))
+			Jobs.getSignUtil().saveSigns();
+	}
+
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onSignTopListCreate(SignChangeEvent event) {
+		if (!plugin.isEnabled())
+			return;
+
+		if (!Jobs.getGCManager().SignsEnabled)
+			return;
+
+		Block block = event.getBlock();
+		if (!(block.getState() instanceof Sign))
+			return;
+
+		Sign sign = (Sign) block.getState();
+
+		if (!ChatColor.stripColor(event.getLine(0)).equalsIgnoreCase("[Jobs]"))
+			return;
+
+		final String signtype = ChatColor.stripColor(event.getLine(1));
+		final SignTopType type = SignTopType.getType(signtype);
+		if (type == null)
+			return;
+
+		Player player = event.getPlayer();
+		if (!player.hasPermission("jobs.command.signs")) {
+			event.setCancelled(true);
+			player.sendMessage(Jobs.getLanguage().getMessage("signs.cantcreate"));
+			return;
+		}
+
+		String jobname = ChatColor.stripColor(event.getLine(2)).toLowerCase();
+		final Job job = Jobs.getJob(jobname);
+		if ((type == SignTopType.toplist || type == SignTopType.questtoplist) && job == null) {
+			player.sendMessage(Jobs.getLanguage().getMessage("command.top.error.nojob"));
+			return;
+		}
+
+		boolean special = false;
+		String numberString = ChatColor.stripColor(event.getLine(3)).toLowerCase();
+		if (numberString.contains("s")) {
+			numberString = numberString.replace("s", "");
+			special = true;
+		}
+
+		int Number = 0;
+		try {
+			Number = Integer.parseInt(numberString);
+		} catch (NumberFormatException e) {
+			player.sendMessage(Jobs.getLanguage().getMessage("general.error.notNumber"));
+			return;
+		}
+
+		jobsSign signInfo = new jobsSign();
+
+		Location loc = sign.getLocation();
+		signInfo.setLoc(loc);
+		signInfo.setNumber(Number);
+		if (job != null)
+			signInfo.setJobName(job.getName());
+		signInfo.setType(type);
+		signInfo.setSpecial(special);
+
+		final SignUtil signUtil = Jobs.getSignUtil();
+		signUtil.addSign(signInfo);
+		signUtil.saveSigns();
+
 		event.setCancelled(true);
-		player.sendMessage(Jobs.getLanguage().getMessage("signs.cantdestroy"));
-		return;
-	    }
+
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () ->
+				signUtil.SignUpdate(job, type), 1L);
 	}
 
-	jobsSign jSign = Jobs.getSignUtil().getSign(block.getLocation());
-	if (jSign == null)
-	    return;
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onSignChange(SignChangeEvent event) {
+		if (!plugin.isEnabled())
+			return;
 
-	if (!player.hasPermission("jobs.command.signs")) {
-	    event.setCancelled(true);
-	    player.sendMessage(Jobs.getLanguage().getMessage("signs.cantdestroy"));
-	    return;
-	}
+		if (!Jobs.getGCManager().SignsEnabled)
+			return;
 
-	if (Jobs.getSignUtil().removeSign(block.getLocation()))
-	    Jobs.getSignUtil().saveSigns();
-    }
+		if (ChatColor.stripColor(event.getLine(0)).equalsIgnoreCase(ChatColor.stripColor(Jobs.getLanguage().getMessage("signs.topline"))) && !ChatColor.stripColor(event
+				.getLine(1))
+				.equalsIgnoreCase("toplist"))
+			event.setLine(0, Convert(Jobs.getLanguage().getMessage("signs.topline")));
+		else
+			return;
 
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onSignTopListCreate(SignChangeEvent event) {
-	if (!plugin.isEnabled())
-	    return;
-
-	if (!Jobs.getGCManager().SignsEnabled)
-	    return;
-
-	Block block = event.getBlock();
-	if (!(block.getState() instanceof Sign))
-	    return;
-
-	Sign sign = (Sign) block.getState();
-
-	if (!ChatColor.stripColor(event.getLine(0)).equalsIgnoreCase("[Jobs]"))
-	    return;
-
-	final String signtype = ChatColor.stripColor(event.getLine(1));
-	final SignTopType type = SignTopType.getType(signtype);
-	if (type == null)
-	    return;
-
-	Player player = event.getPlayer();
-	if (!player.hasPermission("jobs.command.signs")) {
-	    event.setCancelled(true);
-	    player.sendMessage(Jobs.getLanguage().getMessage("signs.cantcreate"));
-	    return;
-	}
-
-	String jobname = ChatColor.stripColor(event.getLine(2)).toLowerCase();
-	final Job job = Jobs.getJob(jobname);
-	if ((type == SignTopType.toplist || type == SignTopType.questtoplist) && job == null) {
-	    player.sendMessage(Jobs.getLanguage().getMessage("command.top.error.nojob"));
-	    return;
-	}
-
-	boolean special = false;
-	String numberString = ChatColor.stripColor(event.getLine(3)).toLowerCase();
-	if (numberString.contains("s")) {
-	    numberString = numberString.replace("s", "");
-	    special = true;
-	}
-
-	int Number = 0;
-	try {
-	    Number = Integer.parseInt(numberString);
-	} catch (NumberFormatException e) {
-	    player.sendMessage(Jobs.getLanguage().getMessage("general.error.notNumber"));
-	    return;
-	}
-
-	jobsSign signInfo = new jobsSign();
-
-	Location loc = sign.getLocation();
-	signInfo.setLoc(loc);
-	signInfo.setNumber(Number);
-	if (job != null)
-	    signInfo.setJobName(job.getName());
-	signInfo.setType(type);
-	signInfo.setSpecial(special);
-
-	final SignUtil signUtil = Jobs.getSignUtil();
-	signUtil.addSign(signInfo);
-	signUtil.saveSigns();
-
-	event.setCancelled(true);
-
-	Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () ->
-	    signUtil.SignUpdate(job, type), 1L);
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-    public void onSignChange(SignChangeEvent event) {
-	if (!plugin.isEnabled())
-	    return;
-
-	if (!Jobs.getGCManager().SignsEnabled)
-	    return;
-
-	if (ChatColor.stripColor(event.getLine(0)).equalsIgnoreCase(ChatColor.stripColor(Jobs.getLanguage().getMessage("signs.topline"))) && !ChatColor.stripColor(event
-	    .getLine(1))
-	    .equalsIgnoreCase("toplist"))
-	    event.setLine(0, Convert(Jobs.getLanguage().getMessage("signs.topline")));
-	else
-	    return;
-
-	if (!event.getPlayer().hasPermission("jobs.command.signs")) {
-	    event.setCancelled(true);
-	    event.getPlayer().sendMessage(Jobs.getLanguage().getMessage("signs.cantcreate"));
-	    return;
-	}
-
-	String command = ChatColor.stripColor(event.getLine(1)).toLowerCase();
-
-	for (String key : Jobs.getGCManager().keys) {
-	    if (command.equalsIgnoreCase(ChatColor.stripColor(Jobs.getLanguage().getMessage("signs.secondline." + key)))) {
-		event.setLine(1, Convert(Jobs.getLanguage().getMessage("signs.secondline." + key)));
-		break;
-	    }
-	}
-
-	Job job = Jobs.getJob(ChatColor.stripColor(event.getLine(2)));
-	if (job == null)
-	    return;
-
-	String color = Jobs.getGCManager().SignsColorizeJobName ? job.getChatColor().toString() : "";
-	event.setLine(2, Convert(color + job.getName()));
-    }
-
-    private static String Convert(String line) {
-	Pattern ReplacePatern = Pattern.compile("&([0-9a-fk-or])");
-	return ReplacePatern.matcher(ChatColor.translateAlternateColorCodes('&', line)).replaceAll("\u00a7$1");
-    }
-
-    // Adding to chat prefix job name
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onPlayerChat(AsyncPlayerChatEvent event) {
-	if (!plugin.isEnabled())
-	    return;
-
-	if (!Jobs.getGCManager().getModifyChat())
-	    return;
-
-	JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(event.getPlayer());
-	String honorific = jPlayer != null ? jPlayer.getDisplayHonorific() : "";
-	if (honorific.equalsIgnoreCase(" "))
-	    honorific = "";
-
-	String format = event.getFormat();
-	format = format.replace("%1$s", honorific + "%1$s");
-	event.setFormat(format);
-    }
-
-    // Changing chat prefix variable to job name
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onPlayerChatLow(AsyncPlayerChatEvent event) {
-	if (!plugin.isEnabled())
-	    return;
-
-	if (Jobs.getGCManager().getModifyChat())
-	    return;
-
-	JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(event.getPlayer());
-	String honorific = jPlayer != null ? jPlayer.getDisplayHonorific() : "";
-	if (honorific.equalsIgnoreCase(" "))
-	    honorific = "";
-
-	String format = event.getFormat();
-	if (!format.contains("{jobs}"))
-	    return;
-
-	format = format.replace("{jobs}", honorific);
-	event.setFormat(format);
-    }
-
-    // Changing chat prefix variable to job name
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
-    public void onPlayerChatHigh(AsyncPlayerChatEvent event) {
-	if (!plugin.isEnabled())
-	    return;
-
-	if (Jobs.getGCManager().getModifyChat())
-	    return;
-
-	JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(event.getPlayer());
-	String honorific = jPlayer != null ? jPlayer.getDisplayHonorific() : "";
-	if (honorific.equalsIgnoreCase(" "))
-	    honorific = "";
-
-	String format = event.getFormat();
-	if (!format.contains("{jobs}"))
-	    return;
-
-	format = format.replace("{jobs}", honorific);
-	event.setFormat(format);
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onWorldLoad(WorldLoadEvent event) {
-	World world = event.getWorld();
-	PluginManager pm = plugin.getServer().getPluginManager();
-	if (pm.getPermission("jobs.world." + world.getName().toLowerCase()) == null)
-	    pm.addPermission(new Permission("jobs.world." + world.getName().toLowerCase(), PermissionDefault.TRUE));
-    }
-
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-    public void onCropGrown(final BlockGrowEvent event) {
-	//disabling plugin in world
-	if (!Jobs.getGCManager().canPerformActionInWorld(event.getBlock().getWorld()))
-	    return;
-
-	Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () ->
-	    Jobs.getBpManager().remove(event.getBlock()), 1L);
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onLimitedItemInteract(PlayerInteractEvent event) {
-	Player player = event.getPlayer();
-	ItemStack iih = Jobs.getNms().getItemInMainHand(player);
-	if (iih == null || iih.getType() == Material.AIR)
-	    return;
-
-	if (event.getClickedBlock() != null && !Jobs.getGCManager().canPerformActionInWorld(event.getClickedBlock().getWorld()))
-	    return;
-
-	JobsPlayer JPlayer = Jobs.getPlayerManager().getJobsPlayer(player);
-	if (JPlayer == null)
-	    return;
-
-	Map<Enchantment, Integer> enchants = new HashMap<>(iih.getEnchantments());
-	if (enchants.isEmpty())
-	    return;
-
-	String name = null;
-	List<String> lore = new ArrayList<>();
-
-	if (iih.hasItemMeta()) {
-	    ItemMeta meta = iih.getItemMeta();
-	    if (meta.hasDisplayName())
-		name = meta.getDisplayName();
-	    if (meta.hasLore())
-		lore = meta.getLore();
-	}
-
-	String meinOk = null;
-	List<JobProgression> prog = JPlayer.getJobProgression();
-
-	mein: for (JobProgression one : prog) {
-	    for (Entry<String, JobLimitedItems> oneItem : one.getJob().getLimitedItems().entrySet()) {
-		if (one.getLevel() >= oneItem.getValue().getLevel())
-		    continue;
-		if (!isThisItem(oneItem.getValue(), CMIMaterial.get(iih), name, lore, enchants))
-		    continue;
-		meinOk = one.getJob().getName();
-		break mein;
-	    }
-	}
-
-	if (meinOk != null) {
-	    event.setCancelled(true);
-	    Jobs.getActionBar().send(player, Jobs.getLanguage().getMessage("limitedItem.error.levelup", "[jobname]", meinOk));
-	}
-    }
-
-    private static boolean isThisItem(JobLimitedItems oneItem, CMIMaterial mat, String name, List<String> lore, Map<Enchantment, Integer> enchants) {
-	if (oneItem.getType() != mat)
-	    return false;
-
-	if (oneItem.getName() != null && name != null) {
-	    if (!ChatColor.translateAlternateColorCodes('&', oneItem.getName()).equalsIgnoreCase(name)) {
-		return false;
-	    }
-	}
-
-	for (String onelore : oneItem.getLore()) {
-	    if (!lore.contains(onelore)) {
-		return false;
-	    }
-	}
-
-	boolean foundEnc = false;
-	for (Entry<Enchantment, Integer> oneE : enchants.entrySet()) {
-	    if (oneItem.getenchants().containsKey(oneE.getKey())) {
-		if (oneItem.getenchants().get(oneE.getKey()) <= oneE.getValue()) {
-		    foundEnc = true;
-		    break;
+		if (!event.getPlayer().hasPermission("jobs.command.signs")) {
+			event.setCancelled(true);
+			event.getPlayer().sendMessage(Jobs.getLanguage().getMessage("signs.cantcreate"));
+			return;
 		}
-	    }
-	}
 
-	if (!foundEnc)
-	    return false;
+		String command = ChatColor.stripColor(event.getLine(1)).toLowerCase();
 
-	return true;
-    }
-
-    @EventHandler
-    public void onChunkChangeMove(PlayerMoveEvent event) {
-	if (event.isCancelled())
-	    return;
-
-	if (!event.getPlayer().isOnline())
-	    return;
-
-	//disabling plugin in world
-	if (event.getTo() != null && !Jobs.getGCManager().canPerformActionInWorld(event.getTo().getWorld()))
-	    return;
-
-	Chunk from = event.getFrom().getChunk();
-	Chunk to = event.getTo().getChunk();
-	if (from == to)
-	    return;
-
-	JobsChunkChangeEvent jobsChunkChangeEvent = new JobsChunkChangeEvent(event.getPlayer(), from, to);
-	Bukkit.getServer().getPluginManager().callEvent(jobsChunkChangeEvent);
-    }
-
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-	if (event.isCancelled())
-	    return;
-
-	boolean shift = false, numberkey = false;
-	ClickType click = event.getClick();
-	if (click.equals(ClickType.SHIFT_LEFT) || click.equals(ClickType.SHIFT_RIGHT))
-	    shift = true;
-
-	if (click.equals(ClickType.NUMBER_KEY))
-	    numberkey = true;
-
-	SlotType slotType = event.getSlotType();
-
-	if ((slotType != SlotType.ARMOR || slotType != SlotType.QUICKBAR) && !event.getInventory().getType().equals(InventoryType.CRAFTING))
-	    return;
-
-	if (!(event.getWhoClicked() instanceof Player))
-	    return;
-
-	Player player = (Player) event.getWhoClicked();
-
-	if (event.getCurrentItem() == null)
-	    return;
-
-	ArmorTypes newArmorType = ArmorTypes.matchType(shift ? event.getCurrentItem() : event.getCursor());
-	if (!shift && newArmorType != null && event.getRawSlot() != newArmorType.getSlot())
-	    return;
-
-	if (shift) {
-	    newArmorType = ArmorTypes.matchType(event.getCurrentItem());
-	    if (newArmorType == null)
-		return;
-
-	    boolean equipping = true;
-	    if (event.getRawSlot() == newArmorType.getSlot())
-		equipping = false;
-
-	    PlayerInventory inv = player.getInventory();
-
-	    if (newArmorType.equals(ArmorTypes.HELMET) &&
-		(equipping ? inv.getHelmet() == null : inv.getHelmet() != null) ||
-		(newArmorType.equals(ArmorTypes.CHESTPLATE) || newArmorType.equals(ArmorTypes.ELYTRA)) &&
-		    (equipping ? inv.getChestplate() == null : inv.getChestplate() != null) ||
-		newArmorType.equals(ArmorTypes.LEGGINGS) &&
-		    (equipping ? inv.getLeggings() == null : inv.getLeggings() != null) ||
-		newArmorType.equals(ArmorTypes.BOOTS) &&
-		    (equipping ? inv.getBoots() == null : inv.getBoots() != null)) {
-		JobsArmorChangeEvent armorEquipEvent = new JobsArmorChangeEvent(player, EquipMethod.SHIFT_CLICK, newArmorType, equipping ? null : event
-		    .getCurrentItem(), equipping ? event.getCurrentItem() : null);
-		Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
-		if (armorEquipEvent.isCancelled()) {
-		    event.setCancelled(true);
+		for (String key : Jobs.getGCManager().keys) {
+			if (command.equalsIgnoreCase(ChatColor.stripColor(Jobs.getLanguage().getMessage("signs.secondline." + key)))) {
+				event.setLine(1, Convert(Jobs.getLanguage().getMessage("signs.secondline." + key)));
+				break;
+			}
 		}
-	    }
 
-	} else {
-	    ItemStack newArmorPiece = event.getCursor();
-	    ItemStack oldArmorPiece = event.getCurrentItem();
-	    if (numberkey) {
-		if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
-		    ItemStack hotbarItem = event.getClickedInventory().getItem(event.getHotbarButton());
-		    if (hotbarItem != null) {
-			newArmorType = ArmorTypes.matchType(hotbarItem);
-			newArmorPiece = hotbarItem;
-			oldArmorPiece = event.getClickedInventory().getItem(event.getSlot());
-		    } else
-			newArmorType = ArmorTypes.matchType(oldArmorPiece != null && oldArmorPiece.getType() != Material.AIR ? oldArmorPiece : event.getCursor());
+		Job job = Jobs.getJob(ChatColor.stripColor(event.getLine(2)));
+		if (job == null)
+			return;
+
+		String color = Jobs.getGCManager().SignsColorizeJobName ? job.getChatColor().toString() : "";
+		event.setLine(2, Convert(color + job.getName()));
+	}
+
+	private static String Convert(String line) {
+		Pattern ReplacePatern = Pattern.compile("&([0-9a-fk-or])");
+		return ReplacePatern.matcher(ChatColor.translateAlternateColorCodes('&', line)).replaceAll("\u00a7$1");
+	}
+
+	// Adding to chat prefix job name
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onPlayerChat(AsyncPlayerChatEvent event) {
+		if (!plugin.isEnabled())
+			return;
+
+		if (!Jobs.getGCManager().getModifyChat())
+			return;
+
+		JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(event.getPlayer());
+		String honorific = jPlayer != null ? jPlayer.getDisplayHonorific() : "";
+		if (honorific.equalsIgnoreCase(" "))
+			honorific = "";
+
+		String format = event.getFormat();
+		format = format.replace("%1$s", honorific + "%1$s");
+		event.setFormat(format);
+	}
+
+	// Changing chat prefix variable to job name
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onPlayerChatLow(AsyncPlayerChatEvent event) {
+		if (!plugin.isEnabled())
+			return;
+
+		if (Jobs.getGCManager().getModifyChat())
+			return;
+
+		JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(event.getPlayer());
+		String honorific = jPlayer != null ? jPlayer.getDisplayHonorific() : "";
+		if (honorific.equalsIgnoreCase(" "))
+			honorific = "";
+
+		String format = event.getFormat();
+		if (!format.contains("{jobs}"))
+			return;
+
+		format = format.replace("{jobs}", honorific);
+		event.setFormat(format);
+	}
+
+	// Changing chat prefix variable to job name
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onPlayerChatHigh(AsyncPlayerChatEvent event) {
+		if (!plugin.isEnabled())
+			return;
+
+		if (Jobs.getGCManager().getModifyChat())
+			return;
+
+		JobsPlayer jPlayer = Jobs.getPlayerManager().getJobsPlayer(event.getPlayer());
+		String honorific = jPlayer != null ? jPlayer.getDisplayHonorific() : "";
+		if (honorific.equalsIgnoreCase(" "))
+			honorific = "";
+
+		String format = event.getFormat();
+		if (!format.contains("{jobs}"))
+			return;
+
+		format = format.replace("{jobs}", honorific);
+		event.setFormat(format);
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onWorldLoad(WorldLoadEvent event) {
+		World world = event.getWorld();
+		PluginManager pm = plugin.getServer().getPluginManager();
+		if (pm.getPermission("jobs.world." + world.getName().toLowerCase()) == null)
+			pm.addPermission(new Permission("jobs.world." + world.getName().toLowerCase(), PermissionDefault.TRUE));
+	}
+
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onCropGrown(final BlockGrowEvent event) {
+		//disabling plugin in world
+		if (!Jobs.getGCManager().canPerformActionInWorld(event.getBlock().getWorld()))
+			return;
+
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, () ->
+				Jobs.getBpManager().remove(event.getBlock()), 1L);
+	}
+
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+	public void onLimitedItemInteract(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
+		ItemStack iih = Jobs.getNms().getItemInMainHand(player);
+		if (iih == null || iih.getType() == Material.AIR)
+			return;
+
+		if (event.getClickedBlock() != null && !Jobs.getGCManager().canPerformActionInWorld(event.getClickedBlock().getWorld()))
+			return;
+
+		JobsPlayer JPlayer = Jobs.getPlayerManager().getJobsPlayer(player);
+		if (JPlayer == null)
+			return;
+
+		Map<Enchantment, Integer> enchants = new HashMap<>(iih.getEnchantments());
+		if (enchants.isEmpty())
+			return;
+
+		String name = null;
+		List<String> lore = new ArrayList<>();
+
+		if (iih.hasItemMeta()) {
+			ItemMeta meta = iih.getItemMeta();
+			if (meta.hasDisplayName())
+				name = meta.getDisplayName();
+			if (meta.hasLore())
+				lore = meta.getLore();
 		}
-	    } else
-		newArmorType = ArmorTypes.matchType(oldArmorPiece != null && oldArmorPiece.getType() != Material.AIR ? oldArmorPiece : event.getCursor());
 
-	    if (newArmorType != null && event.getRawSlot() == newArmorType.getSlot()) {
-		EquipMethod method = EquipMethod.DRAG;
-		if (event.getAction().equals(InventoryAction.HOTBAR_SWAP) || numberkey)
-		    method = EquipMethod.HOTBAR_SWAP;
-		JobsArmorChangeEvent armorEquipEvent = new JobsArmorChangeEvent((Player) event.getWhoClicked(), method, newArmorType, oldArmorPiece, newArmorPiece);
-		Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
-		if (armorEquipEvent.isCancelled())
-		    event.setCancelled(true);
-	    }
-	}
-    }
+		String meinOk = null;
+		List<JobProgression> prog = JPlayer.getJobProgression();
 
-    @EventHandler
-    public void playerInteractEvent(PlayerInteractEvent event) {
-	Action action = event.getAction();
-	if (action == Action.PHYSICAL)
-	    return;
+		mein:
+		for (JobProgression one : prog) {
+			for (Entry<String, JobLimitedItems> oneItem : one.getJob().getLimitedItems().entrySet()) {
+				if (one.getLevel() >= oneItem.getValue().getLevel())
+					continue;
+				if (!isThisItem(oneItem.getValue(), CMIMaterial.get(iih), name, lore, enchants))
+					continue;
+				meinOk = one.getJob().getName();
+				break mein;
+			}
+		}
 
-	if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK)
-	    return;
-
-	ArmorTypes newArmorType = ArmorTypes.matchType(event.getItem());
-	if (newArmorType == null)
-	    return;
-
-	Player player = event.getPlayer();
-	PlayerInventory inv = player.getInventory();
-	if (newArmorType.equals(ArmorTypes.HELMET) &&
-	    inv.getHelmet() == null ||
-	    (newArmorType.equals(ArmorTypes.CHESTPLATE) || newArmorType.equals(ArmorTypes.ELYTRA)) &&
-		inv.getChestplate() == null ||
-	    newArmorType.equals(ArmorTypes.LEGGINGS) &&
-		inv.getLeggings() == null ||
-	    newArmorType.equals(ArmorTypes.BOOTS) &&
-		inv.getBoots() == null) {
-	    JobsArmorChangeEvent armorEquipEvent = new JobsArmorChangeEvent(player, EquipMethod.HOTBAR, ArmorTypes.matchType(event.getItem()), null, event
-		.getItem());
-	    Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
-	    if (armorEquipEvent.isCancelled()) {
-		event.setCancelled(true);
-		player.updateInventory();
-	    }
+		if (meinOk != null) {
+			event.setCancelled(true);
+			Jobs.getActionBar().send(player, Jobs.getLanguage().getMessage("limitedItem.error.levelup", "[jobname]", meinOk));
+		}
 	}
 
-    }
+	private static boolean isThisItem(JobLimitedItems oneItem, CMIMaterial mat, String name, List<String> lore, Map<Enchantment, Integer> enchants) {
+		if (oneItem.getType() != mat)
+			return false;
 
-    @EventHandler
-    public void dispenserFireEvent(BlockDispenseEvent event) {
-	if (event.isCancelled())
-	    return;
+		if (oneItem.getName() != null && name != null) {
+			if (!ChatColor.translateAlternateColorCodes('&', oneItem.getName()).equalsIgnoreCase(name)) {
+				return false;
+			}
+		}
 
-	ItemStack item = event.getItem();
-	ArmorTypes type = ArmorTypes.matchType(item);
-	if (ArmorTypes.matchType(item) == null)
-	    return;
+		for (String onelore : oneItem.getLore()) {
+			if (!lore.contains(onelore)) {
+				return false;
+			}
+		}
 
-	Location loc = event.getBlock().getLocation();
-	for (Player p : loc.getWorld().getPlayers()) {
-	    Location ploc = p.getLocation();
-	    if (loc.getBlockY() - ploc.getBlockY() >= -1 && loc.getBlockY() - ploc.getBlockY() <= 1) {
+		boolean foundEnc = false;
+		for (Entry<Enchantment, Integer> oneE : enchants.entrySet()) {
+			if (oneItem.getenchants().containsKey(oneE.getKey())) {
+				if (oneItem.getenchants().get(oneE.getKey()) <= oneE.getValue()) {
+					foundEnc = true;
+					break;
+				}
+			}
+		}
 
-		if (p.getInventory().getHelmet() == null && type.equals(ArmorTypes.HELMET) ||
-		    p.getInventory().getChestplate() == null && (type.equals(ArmorTypes.CHESTPLATE) || type.equals(ArmorTypes.ELYTRA)) ||
-		    p.getInventory().getLeggings() == null && type.equals(ArmorTypes.LEGGINGS) ||
-		    p.getInventory().getBoots() == null && type.equals(ArmorTypes.BOOTS)) {
+		if (!foundEnc)
+			return false;
 
-		    if (!(event.getBlock().getState() instanceof Dispenser))
-			continue;
+		return true;
+	}
 
-		    Dispenser dispenser = (Dispenser) event.getBlock().getState();
-		    BlockFace directionFacing = null;
-		    if (Version.isCurrentEqualOrLower(Version.v1_13_R2)) {
-			org.bukkit.material.Dispenser dis = (org.bukkit.material.Dispenser) dispenser.getData();
-			directionFacing = dis.getFacing();
-		    } else {
-			org.bukkit.block.data.type.Dispenser dis = (org.bukkit.block.data.type.Dispenser) dispenser.getBlockData();
-			directionFacing = dis.getFacing();
-		    }
+	@EventHandler
+	public void onChunkChangeMove(PlayerMoveEvent event) {
+		if (event.isCancelled())
+			return;
 
-		    if (directionFacing == BlockFace.EAST &&
-			ploc.getBlockX() != loc.getBlockX() &&
-			ploc.getX() <= loc.getX() + 2.3 &&
-			ploc.getX() >= loc.getX() ||
-			directionFacing == BlockFace.WEST &&
-			    ploc.getX() >= loc.getX() - 1.3 &&
-			    ploc.getX() <= loc.getX() ||
-			directionFacing == BlockFace.SOUTH &&
-			    ploc.getBlockZ() != loc.getBlockZ() &&
-			    ploc.getZ() <= loc.getZ() + 2.3 &&
-			    ploc.getZ() >= loc.getZ() ||
-			directionFacing == BlockFace.NORTH &&
-			    ploc.getZ() >= loc.getZ() - 1.3 &&
-			    ploc.getZ() <= loc.getZ()) {
+		if (!event.getPlayer().isOnline())
+			return;
 
-			JobsArmorChangeEvent armorEquipEvent = new JobsArmorChangeEvent(p, EquipMethod.DISPENSER, type, null, item);
+		//disabling plugin in world
+		if (event.getTo() != null && !Jobs.getGCManager().canPerformActionInWorld(event.getTo().getWorld()))
+			return;
+
+		Chunk from = event.getFrom().getChunk();
+		Chunk to = event.getTo().getChunk();
+		if (from == to)
+			return;
+
+		JobsChunkChangeEvent jobsChunkChangeEvent = new JobsChunkChangeEvent(event.getPlayer(), from, to);
+		Bukkit.getServer().getPluginManager().callEvent(jobsChunkChangeEvent);
+	}
+
+	@EventHandler
+	public void onInventoryClick(InventoryClickEvent event) {
+		if (event.isCancelled())
+			return;
+
+		boolean shift = false, numberkey = false;
+		ClickType click = event.getClick();
+		if (click.equals(ClickType.SHIFT_LEFT) || click.equals(ClickType.SHIFT_RIGHT))
+			shift = true;
+
+		if (click.equals(ClickType.NUMBER_KEY))
+			numberkey = true;
+
+		SlotType slotType = event.getSlotType();
+
+		if ((slotType != SlotType.ARMOR || slotType != SlotType.QUICKBAR) && !event.getInventory().getType().equals(InventoryType.CRAFTING))
+			return;
+
+		if (!(event.getWhoClicked() instanceof Player))
+			return;
+
+		Player player = (Player) event.getWhoClicked();
+
+		if (event.getCurrentItem() == null)
+			return;
+
+		ArmorTypes newArmorType = ArmorTypes.matchType(shift ? event.getCurrentItem() : event.getCursor());
+		if (!shift && newArmorType != null && event.getRawSlot() != newArmorType.getSlot())
+			return;
+
+		if (shift) {
+			newArmorType = ArmorTypes.matchType(event.getCurrentItem());
+			if (newArmorType == null)
+				return;
+
+			boolean equipping = true;
+			if (event.getRawSlot() == newArmorType.getSlot())
+				equipping = false;
+
+			PlayerInventory inv = player.getInventory();
+
+			if (newArmorType.equals(ArmorTypes.HELMET) &&
+					(equipping == (inv.getHelmet() == null)) ||
+					(newArmorType.equals(ArmorTypes.CHESTPLATE) || newArmorType.equals(ArmorTypes.ELYTRA)) &&
+							(equipping == (inv.getChestplate() == null)) ||
+					newArmorType.equals(ArmorTypes.LEGGINGS) &&
+							(equipping == (inv.getLeggings() == null)) ||
+					newArmorType.equals(ArmorTypes.BOOTS) &&
+							(equipping == (inv.getBoots() == null))) {
+				JobsArmorChangeEvent armorEquipEvent = new JobsArmorChangeEvent(player, EquipMethod.SHIFT_CLICK, newArmorType, equipping ? null : event
+						.getCurrentItem(), equipping ? event.getCurrentItem() : null);
+				Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
+				if (armorEquipEvent.isCancelled()) {
+					event.setCancelled(true);
+				}
+			}
+
+		} else {
+			ItemStack newArmorPiece = event.getCursor();
+			ItemStack oldArmorPiece = event.getCurrentItem();
+			if (numberkey) {
+				if (event.getClickedInventory().getType().equals(InventoryType.PLAYER)) {
+					ItemStack hotbarItem = event.getClickedInventory().getItem(event.getHotbarButton());
+					if (hotbarItem != null) {
+						newArmorType = ArmorTypes.matchType(hotbarItem);
+						newArmorPiece = hotbarItem;
+						oldArmorPiece = event.getClickedInventory().getItem(event.getSlot());
+					} else
+						newArmorType = ArmorTypes.matchType(oldArmorPiece != null && oldArmorPiece.getType() != Material.AIR ? oldArmorPiece : event.getCursor());
+				}
+			} else
+				newArmorType = ArmorTypes.matchType(oldArmorPiece != null && oldArmorPiece.getType() != Material.AIR ? oldArmorPiece : event.getCursor());
+
+			if (newArmorType != null && event.getRawSlot() == newArmorType.getSlot()) {
+				EquipMethod method = EquipMethod.DRAG;
+				if (event.getAction().equals(InventoryAction.HOTBAR_SWAP) || numberkey)
+					method = EquipMethod.HOTBAR_SWAP;
+				JobsArmorChangeEvent armorEquipEvent = new JobsArmorChangeEvent((Player) event.getWhoClicked(), method, newArmorType, oldArmorPiece, newArmorPiece);
+				Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
+				if (armorEquipEvent.isCancelled())
+					event.setCancelled(true);
+			}
+		}
+	}
+
+	@EventHandler
+	public void playerInteractEvent(PlayerInteractEvent event) {
+		Action action = event.getAction();
+		if (action == Action.PHYSICAL)
+			return;
+
+		if (action != Action.RIGHT_CLICK_AIR && action != Action.RIGHT_CLICK_BLOCK)
+			return;
+
+		ArmorTypes newArmorType = ArmorTypes.matchType(event.getItem());
+		if (newArmorType == null)
+			return;
+
+		Player player = event.getPlayer();
+		PlayerInventory inv = player.getInventory();
+		if (newArmorType.equals(ArmorTypes.HELMET) &&
+				inv.getHelmet() == null ||
+				(newArmorType.equals(ArmorTypes.CHESTPLATE) || newArmorType.equals(ArmorTypes.ELYTRA)) &&
+						inv.getChestplate() == null ||
+				newArmorType.equals(ArmorTypes.LEGGINGS) &&
+						inv.getLeggings() == null ||
+				newArmorType.equals(ArmorTypes.BOOTS) &&
+						inv.getBoots() == null) {
+			JobsArmorChangeEvent armorEquipEvent = new JobsArmorChangeEvent(player, EquipMethod.HOTBAR, ArmorTypes.matchType(event.getItem()), null, event
+					.getItem());
 			Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
 			if (armorEquipEvent.isCancelled()) {
-			    event.setCancelled(true);
-			    return;
+				event.setCancelled(true);
+				player.updateInventory();
 			}
-		    }
 		}
-	    }
+
 	}
-    }
 
-    @EventHandler
-    public void JobsArmorChangeEvent(JobsArmorChangeEvent event) {
-	Jobs.getPlayerManager().resetiItemBonusCache(event.getPlayer().getUniqueId());
-    }
+	@EventHandler
+	public void dispenserFireEvent(BlockDispenseEvent event) {
+		if (event.isCancelled())
+			return;
 
-    @EventHandler
-    public void PlayerItemHeldEvent(PlayerItemHeldEvent event) {
-	Jobs.getPlayerManager().resetiItemBonusCache(event.getPlayer().getUniqueId());
-    }
+		ItemStack item = event.getItem();
+		ArmorTypes type = ArmorTypes.matchType(item);
+		if (ArmorTypes.matchType(item) == null)
+			return;
 
-    @EventHandler
-    public void PlayerItemBreakEvent(PlayerItemBreakEvent event) {
-	Jobs.getPlayerManager().resetiItemBonusCache(event.getPlayer().getUniqueId());
-    }
+		Location loc = event.getBlock().getLocation();
+		for (Player p : loc.getWorld().getPlayers()) {
+			Location ploc = p.getLocation();
+			if (loc.getBlockY() - ploc.getBlockY() >= -1 && loc.getBlockY() - ploc.getBlockY() <= 1) {
 
-    @EventHandler
-    public void PlayerItemBreakEvent(InventoryClickEvent event) {
-	Player player = (Player) event.getWhoClicked();
-	Jobs.getPlayerManager().resetiItemBonusCache(player.getUniqueId());
-    }
+				if (p.getInventory().getHelmet() == null && type.equals(ArmorTypes.HELMET) ||
+						p.getInventory().getChestplate() == null && (type.equals(ArmorTypes.CHESTPLATE) || type.equals(ArmorTypes.ELYTRA)) ||
+						p.getInventory().getLeggings() == null && type.equals(ArmorTypes.LEGGINGS) ||
+						p.getInventory().getBoots() == null && type.equals(ArmorTypes.BOOTS)) {
+
+					if (!(event.getBlock().getState() instanceof Dispenser))
+						continue;
+
+					Dispenser dispenser = (Dispenser) event.getBlock().getState();
+					BlockFace directionFacing = null;
+					if (Version.isCurrentEqualOrLower(Version.v1_13_R2)) {
+						org.bukkit.material.Dispenser dis = (org.bukkit.material.Dispenser) dispenser.getData();
+						directionFacing = dis.getFacing();
+					} else {
+						org.bukkit.block.data.type.Dispenser dis = (org.bukkit.block.data.type.Dispenser) dispenser.getBlockData();
+						directionFacing = dis.getFacing();
+					}
+
+					if (directionFacing == BlockFace.EAST &&
+							ploc.getBlockX() != loc.getBlockX() &&
+							ploc.getX() <= loc.getX() + 2.3 &&
+							ploc.getX() >= loc.getX() ||
+							directionFacing == BlockFace.WEST &&
+									ploc.getX() >= loc.getX() - 1.3 &&
+									ploc.getX() <= loc.getX() ||
+							directionFacing == BlockFace.SOUTH &&
+									ploc.getBlockZ() != loc.getBlockZ() &&
+									ploc.getZ() <= loc.getZ() + 2.3 &&
+									ploc.getZ() >= loc.getZ() ||
+							directionFacing == BlockFace.NORTH &&
+									ploc.getZ() >= loc.getZ() - 1.3 &&
+									ploc.getZ() <= loc.getZ()) {
+
+						JobsArmorChangeEvent armorEquipEvent = new JobsArmorChangeEvent(p, EquipMethod.DISPENSER, type, null, item);
+						Bukkit.getServer().getPluginManager().callEvent(armorEquipEvent);
+						if (armorEquipEvent.isCancelled()) {
+							event.setCancelled(true);
+							return;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@EventHandler
+	public void JobsArmorChangeEvent(JobsArmorChangeEvent event) {
+		Jobs.getPlayerManager().resetiItemBonusCache(event.getPlayer().getUniqueId());
+	}
+
+	@EventHandler
+	public void PlayerItemHeldEvent(PlayerItemHeldEvent event) {
+		Jobs.getPlayerManager().resetiItemBonusCache(event.getPlayer().getUniqueId());
+	}
+
+	@EventHandler
+	public void PlayerItemBreakEvent(PlayerItemBreakEvent event) {
+		Jobs.getPlayerManager().resetiItemBonusCache(event.getPlayer().getUniqueId());
+	}
+
+	@EventHandler
+	public void PlayerItemBreakEvent(InventoryClickEvent event) {
+		Player player = (Player) event.getWhoClicked();
+		Jobs.getPlayerManager().resetiItemBonusCache(player.getUniqueId());
+	}
 }
