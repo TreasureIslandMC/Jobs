@@ -83,8 +83,8 @@ public class PlayerManager {
 	private HashMap<String, PlayerInfo> PlayerNameMap = new HashMap<>();
 
 	/**
-	 * @return {@link PointsData}
 	 * @deprecated Use {@link Jobs#getPointsData} instead
+	 * @return {@link PointsData}
 	 */
 	@Deprecated
 	public PointsData getPointsData() {
@@ -180,7 +180,6 @@ public class PlayerManager {
 
 	/**
 	 * Handles join of new player
-	 *
 	 * @param playername
 	 */
 	public void playerJoin(Player player) {
@@ -208,11 +207,12 @@ public class PlayerManager {
 		jPlayer.onConnect();
 		jPlayer.reloadHonorific();
 		Jobs.getPermissionHandler().recalculatePermissions(jPlayer);
+
+		return;
 	}
 
 	/**
 	 * Handles player quit
-	 *
 	 * @param playername
 	 */
 	public void playerQuit(Player player) {
@@ -250,7 +250,12 @@ public class PlayerManager {
 		for (JobsPlayer jPlayer : list)
 			jPlayer.save();
 
-		players.values().removeIf(jPlayer -> !jPlayer.isOnline() && jPlayer.isSaved());
+		Iterator<JobsPlayer> iter = players.values().iterator();
+		while (iter.hasNext()) {
+			JobsPlayer jPlayer = iter.next();
+			if (!jPlayer.isOnline() && jPlayer.isSaved())
+				iter.remove();
+		}
 
 		Jobs.getBpManager().saveCache();
 	}
@@ -286,7 +291,6 @@ public class PlayerManager {
 
 	/**
 	 * Get the player job info for specific player
-	 *
 	 * @param player - the player who's job you're getting
 	 * @return the player job info of the player
 	 */
@@ -303,7 +307,6 @@ public class PlayerManager {
 
 	/**
 	 * Get the player job info for specific player
-	 *
 	 * @param player name - the player name who's job you're getting
 	 * @return the player job info of the player
 	 */
@@ -316,13 +319,12 @@ public class PlayerManager {
 
 	/**
 	 * Get the player job info for specific player
-	 *
 	 * @param archivedJobs
-	 * @param player       - the player who's job you're getting
+	 * @param player - the player who's job you're getting
 	 * @return the player job info of the player
 	 */
 	public JobsPlayer getJobsPlayerOffline(PlayerInfo info, List<JobsDAOData> jobs, PlayerPoints points,
-										   Map<String, Log> logs, ArchivedJobs archivedJobs, PaymentData limits) {
+										   HashMap<String, Log> logs, ArchivedJobs archivedJobs, PaymentData limits) {
 		if (info == null)
 			return null;
 
@@ -370,7 +372,6 @@ public class PlayerManager {
 
 	/**
 	 * Causes player to join their job
-	 *
 	 * @param jPlayer
 	 * @param job
 	 */
@@ -399,7 +400,6 @@ public class PlayerManager {
 
 	/**
 	 * Causes player to leave their job
-	 *
 	 * @param jPlayer
 	 * @param job
 	 */
@@ -431,7 +431,6 @@ public class PlayerManager {
 
 	/**
 	 * Causes player to leave all their jobs
-	 *
 	 * @param jPlayer
 	 */
 	public void leaveAllJobs(JobsPlayer jPlayer) {
@@ -444,10 +443,9 @@ public class PlayerManager {
 
 	/**
 	 * Transfers player job
-	 *
 	 * @param jPlayer
-	 * @param oldjob  - the old job
-	 * @param newjob  - the new job
+	 * @param oldjob - the old job
+	 * @param newjob - the new job
 	 */
 	public boolean transferJob(JobsPlayer jPlayer, Job oldjob, Job newjob) {
 		if (!jPlayer.transferJob(oldjob, newjob))
@@ -465,10 +463,9 @@ public class PlayerManager {
 
 	/**
 	 * Promotes player in their job
-	 *
 	 * @param jPlayer
-	 * @param job     - the job
-	 * @param levels  - number of levels to promote
+	 * @param job - the job
+	 * @param levels - number of levels to promote
 	 */
 	public void promoteJob(JobsPlayer jPlayer, Job job, int levels) {
 		jPlayer.promoteJob(job, levels);
@@ -480,10 +477,9 @@ public class PlayerManager {
 
 	/**
 	 * Demote player in their job
-	 *
 	 * @param jPlayer
-	 * @param job     - the job
-	 * @param levels  - number of levels to demote
+	 * @param job - the job
+	 * @param levels - number of levels to demote
 	 */
 	public void demoteJob(JobsPlayer jPlayer, Job job, int levels) {
 		jPlayer.demoteJob(job, levels);
@@ -494,9 +490,8 @@ public class PlayerManager {
 
 	/**
 	 * Adds experience to the player
-	 *
 	 * @param jPlayer
-	 * @param job        - the job
+	 * @param job - the job
 	 * @param experience - experience gained
 	 */
 	public void addExperience(JobsPlayer jPlayer, Job job, double experience) {
@@ -515,9 +510,8 @@ public class PlayerManager {
 
 	/**
 	 * Removes experience to the player
-	 *
 	 * @param jPlayer
-	 * @param job        - the job
+	 * @param job - the job
 	 * @param experience - experience gained
 	 */
 	public void removeExperience(JobsPlayer jPlayer, Job job, double experience) {
@@ -533,7 +527,6 @@ public class PlayerManager {
 
 	/**
 	 * Broadcasts level up about a player
-	 *
 	 * @param jPlayer
 	 * @param job
 	 * @param oldLevel
@@ -774,7 +767,6 @@ public class PlayerManager {
 
 	/**
 	 * Performs command on level up
-	 *
 	 * @param jPlayer
 	 * @param job
 	 * @param oldLevel
@@ -800,8 +792,7 @@ public class PlayerManager {
 
 	/**
 	 * Get max jobs
-	 *
-	 * @param jPlayer
+	 * @param player
 	 * @return True if he have permission
 	 */
 	public boolean getJobsLimit(JobsPlayer jPlayer, Short currentCount) {
